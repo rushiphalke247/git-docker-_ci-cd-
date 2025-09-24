@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Define Docker Hub credentials ID (should be configured in Jenkins)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        // Define image name - update with your DockerHub username
         IMAGE_NAME = "${DOCKERHUB_CREDENTIALS_USR}/nodejs-demo-app"
         IMAGE_TAG = "latest"
     }
@@ -12,51 +10,24 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from repository
                 checkout scm
-            }
-        }
-
-        stage('Setup Node.js') {
-            steps {
-                // Use Node.js tool configured in Jenkins
-                script {
-                    def nodeVersion = '18'
-                    tool name: "Node-${nodeVersion}", type: 'NodeJSInstallation'
-                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    if (isUnix()) {
-                        sh 'npm ci'
-                    } else {
-                        bat 'npm ci'
-                    }
-                }
+                sh 'npm ci'
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    if (isUnix()) {
-                        sh 'npm test'
-                    } else {
-                        bat 'npm test'
-                    }
-                }
+                sh 'npm test'
             }
             post {
                 always {
-                    // Archive test results if available
-                    script {
-                        if (fileExists('test-results.xml')) {
-                            junit 'test-results.xml'
-                        }
-                    }
+                    when { expression { fileExists('test-results.xml') } }
+                    junit 'test-results.xml'
                 }
             }
         }
@@ -64,10 +35,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image
                     def image = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
-                    
-                    // Tag with build number as well
                     image.tag("${IMAGE_NAME}:${BUILD_NUMBER}")
                 }
             }
@@ -76,8 +44,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Login and push to Docker Hub
-                    docker.withRegistry('https://registry-1.docker.io/v2/', 'dockerhub-credentials') {
+                    docker.withRegistry('https://registry-1.docker.io/', 'dockerhub-credentials') {
                         def image = docker.image("${IMAGE_NAME}:${IMAGE_TAG}")
                         image.push()
                         image.push("${BUILD_NUMBER}")
@@ -89,16 +56,8 @@ pipeline {
 
     post {
         always {
-            // Clean up Docker images to save space
-            script {
-                if (isUnix()) {
-                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
-                    sh "docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || true"
-                } else {
-                    bat "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || exit 0"
-                    bat "docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || exit 0"
-                }
-            }
+            sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
+            sh "docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || true"
         }
         success {
             echo 'Pipeline completed successfully!'
