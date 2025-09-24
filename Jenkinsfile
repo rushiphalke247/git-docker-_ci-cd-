@@ -56,8 +56,10 @@ pipeline {
 
     post {
         always {
-            sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
-            sh "docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || true"
+            script {
+                sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
+                sh "docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || true"
+            }
         }
         success {
             echo 'Pipeline completed successfully!'
