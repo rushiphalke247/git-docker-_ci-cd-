@@ -21,12 +21,12 @@ pipeline {
             steps {
                 // Use Python tool configured in Jenkins
                 script {
-                    def pythonVersion = '3.11'
-                    // Install Python if not available
                     if (isUnix()) {
                         sh 'python3 --version || echo "Python not found"'
+                        sh 'which pip3 || which pip || echo "pip not in PATH, will use python3 -m pip"'
                     } else {
                         bat 'python --version || echo "Python not found"'
+                        bat 'where pip || echo "pip not found, will use python -m pip"'
                     }
                 }
             }
@@ -36,9 +36,23 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'pip install -r requirements.txt'
+                        sh '''
+                            if command -v pip3 >/dev/null 2>&1; then
+                                pip3 install -r requirements.txt
+                            elif command -v pip >/dev/null 2>&1; then
+                                pip install -r requirements.txt
+                            else
+                                python3 -m pip install -r requirements.txt
+                            fi
+                        '''
                     } else {
-                        bat 'pip install -r requirements.txt'
+                        bat '''
+                            where pip >nul 2>&1 && (
+                                pip install -r requirements.txt
+                            ) || (
+                                python -m pip install -r requirements.txt
+                            )
+                        '''
                     }
                 }
             }
@@ -48,7 +62,7 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'python test.py'
+                        sh 'python3 test.py'
                     } else {
                         bat 'python test.py'
                     }

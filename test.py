@@ -1,41 +1,50 @@
 import unittest
-import requests
-import time
-import threading
+import sys
+import os
+
+# Add requests import with fallback
+try:
+    import requests
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
+    print("Warning: requests library not available, skipping HTTP tests")
+
 from app import app
 
 class TestApp(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Start the Flask app in a separate thread for testing
-        cls.server_thread = threading.Thread(target=cls.run_app)
-        cls.server_thread.daemon = True
-        cls.server_thread.start()
-        # Give the server a moment to start
-        time.sleep(1)
+    def test_app_creation(self):
+        """Test that the Flask app can be created"""
+        self.assertIsNotNone(app)
+        self.assertEqual(app.name, 'app')
+        print('Test passed: Flask app created successfully')
     
-    @classmethod
-    def run_app(cls):
-        app.run(host='127.0.0.1', port=3000, debug=False)
+    def test_hello_route_function(self):
+        """Test the hello route function directly"""
+        with app.test_client() as client:
+            response = client.get('/')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.get_data(as_text=True), 'Hello from python-demo-app!')
+            print('Test passed: hello route returns correct response')
     
-    def test_hello_endpoint(self):
+    @unittest.skipIf(not HAS_REQUESTS, "requests library not available")
+    def test_hello_endpoint_http(self):
+        """Test the endpoint via HTTP (if requests is available)"""
         try:
-            response = requests.get('http://127.0.0.1:3000/')
+            response = requests.get('http://127.0.0.1:3000/', timeout=1)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.text, 'Hello from python-demo-app!')
-            print('Test passed: server responded correctly')
-        except requests.exceptions.ConnectionError:
-            # If running in CI we expect code-only tests. Keep exit 0 so that example passes.
+            print('Test passed: HTTP endpoint responded correctly')
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
             print('skipped: local server not started in CI; use unit tests in real projects')
             pass
 
 if __name__ == '__main__':
-    try:
-        # Try to test the endpoint
-        response = requests.get('http://127.0.0.1:3000/', timeout=1)
-        print('Test passed: server is running')
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-        print('test placeholder passed')
+    print('Running Python Flask App Tests...')
+    
+    # Simple fallback test if requests is not available
+    if not HAS_REQUESTS:
+        print('Running basic app tests without HTTP requests...')
     
     # Run the tests
-    unittest.main(verbosity=2, exit=False)
+    unittest.main(verbosity=2, exit=True)
