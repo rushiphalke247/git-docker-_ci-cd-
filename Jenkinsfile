@@ -5,7 +5,7 @@ pipeline {
         // Define Docker Hub credentials ID (should be configured in Jenkins)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         // Define image name - update with your DockerHub username
-        IMAGE_NAME = "${DOCKERHUB_CREDENTIALS_USR}/nodejs-demo-app"
+        IMAGE_NAME = "${DOCKERHUB_CREDENTIALS_USR}/python-demo-app"
         IMAGE_TAG = "latest"
     }
 
@@ -17,12 +17,17 @@ pipeline {
             }
         }
 
-        stage('Setup Node.js') {
+        stage('Setup Python') {
             steps {
-                // Use Node.js tool configured in Jenkins
+                // Use Python tool configured in Jenkins
                 script {
-                    def nodeVersion = '18'
-                    tool name: "Node-${nodeVersion}", type: 'NodeJSInstallation'
+                    def pythonVersion = '3.11'
+                    // Install Python if not available
+                    if (isUnix()) {
+                        sh 'python3 --version || echo "Python not found"'
+                    } else {
+                        bat 'python --version || echo "Python not found"'
+                    }
                 }
             }
         }
@@ -31,9 +36,9 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'npm ci'
+                        sh 'pip install -r requirements.txt'
                     } else {
-                        bat 'npm ci'
+                        bat 'pip install -r requirements.txt'
                     }
                 }
             }
@@ -43,9 +48,9 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'npm test'
+                        sh 'python test.py'
                     } else {
-                        bat 'npm test'
+                        bat 'python test.py'
                     }
                 }
             }
