@@ -71,7 +71,6 @@ docker run -d \
 - **AWS**: Use AWS EC2 with Jenkins AMI
 - **Google Cloud**: Use Google Cloud Compute Engine
 - **Azure**: Use Azure Virtual Machines
-- **DigitalOcean**: Use Jenkins marketplace image
 
 ## ⚙️ Pipeline Configuration
 
@@ -79,7 +78,7 @@ docker run -d \
 1. Open Jenkins at `http://localhost:8080`
 2. Get initial admin password:
    ```bash
-   # Linux/Mac
+   # Linux
    sudo cat /var/lib/jenkins/secrets/initialAdminPassword
    
    # Windows
@@ -97,7 +96,6 @@ Install these plugins via **Manage Jenkins → Manage Plugins**:
 - **Docker Pipeline Plugin**
 - **Git Plugin** (usually pre-installed)
 - **GitHub Integration Plugin**
-- **Blue Ocean** (optional, for better UI)
 
 ### 3. Configure Global Tools
 Go to **Manage Jenkins → Global Tool Configuration**:
@@ -130,50 +128,50 @@ Go to **Manage Jenkins → Manage Credentials → Global**:
 
 Our Jenkins pipeline includes the following stages:
 
-### 1. **Checkout** 🔄
+### 1. **Checkout** 
 - Pulls latest code from repository
 - Shows commit information
 - Sets up workspace
 
-### 2. **Setup Environment** 🐍
+### 2. **Setup Environment** 
 - Verifies Python installation
 - Checks pip availability
 - Lists workspace contents
 
-### 3. **Install Dependencies** 📦
+### 3. **Install Dependencies** 
 - Installs Python packages from requirements.txt
 - Handles different pip command variations
 - Confirms successful installation
 
-### 4. **Build** 🔨
+### 4. **Build** 
 - Creates build directory
 - Copies application files
 - Creates build artifacts
 - Archives artifacts for later use
 
-### 5. **Test** 🧪
+### 5. **Test** 
 - Runs comprehensive test suite
 - Generates test reports
 - Archives test logs
 - Fails pipeline if tests fail
 
-### 6. **Build Docker Image** 🐳
+### 6. **Build Docker Image**
 - Creates Docker image from Dockerfile
 - Tags image with latest and build number
 - Optimizes image layers
 
-### 7. **Push to Registry** 📤
+### 7. **Push to Registry** 
 - Pushes Docker image to DockerHub
 - Makes image available for deployment
 - Tags with multiple versions
 
-### 8. **Deploy** 🚀
+### 8. **Deploy** 
 - Stops existing application container
 - Runs new container with updated image
 - Verifies deployment success
 - Provides access URLs
 
-## 🌐 Webhook Setup
+##  Webhook Setup
 
 ### Automatic Pipeline Triggering
 
@@ -199,13 +197,13 @@ In the pipeline configuration:
    - **Payload URL**: `http://your-jenkins-url:8080/github-webhook/`
    - **Content type**: `application/json`
    - **Events**: Choose "Just the push event"
-   - **Active**: ✅ Checked
+   - **Active**:  Checked
 
 #### 4. Test Webhook
 - Make a code change and push to repository
 - Jenkins should automatically trigger the pipeline
 
-## 🧪 Testing the Pipeline
+## Testing the Pipeline
 
 ### 1. Manual Pipeline Trigger
 - Go to your pipeline project
@@ -225,14 +223,14 @@ git push origin main
 
 ### 3. Verify Pipeline Stages
 Check that all stages execute successfully:
-- ✅ Checkout
-- ✅ Setup Environment  
-- ✅ Install Dependencies
-- ✅ Build
-- ✅ Test
-- ✅ Build Docker Image
-- ✅ Push to Registry
-- ✅ Deploy
+- Checkout
+-  Setup Environment  
+-  Install Dependencies
+-  Build
+-  Test
+-  Build Docker Image
+-  Push to Registry
+-  Deploy
 
 ### 4. Verify Deployment
 After successful deployment:
@@ -245,7 +243,7 @@ curl http://localhost:3001
 # Should return: "Hello from python-demo-app!"
 ```
 
-## 🔍 Monitoring and Logs
+##  Monitoring and Logs
 
 ### Pipeline Monitoring
 - **Blue Ocean UI**: Better visualization of pipeline stages
@@ -264,7 +262,7 @@ docker stats python-demo-app
 curl http://localhost:3001
 ```
 
-## 🛠️ Troubleshooting
+##  Troubleshooting
 
 ### Common Issues and Solutions
 
@@ -333,45 +331,16 @@ python3 --version
 pip3 --version
 ```
 
-## 📊 Pipeline Success Metrics
+##  Pipeline Success Metrics
 
 A successful pipeline run should show:
-- ✅ All stages completed successfully
-- ✅ Tests passing with 100% success rate
-- ✅ Docker image built and pushed
-- ✅ Application deployed and accessible
-- ✅ No errors in console output
+-  All stages completed successfully
+-  Tests passing with 100% success rate
+-  Docker image built and pushed
+-  Application deployed and accessible
+-  No errors in console output
 
-## 🎯 Best Practices
-
-### Security
-- Use Jenkins credentials for sensitive data
-- Don't hardcode passwords in Jenkinsfile
-- Regularly update Jenkins and plugins
-- Limit Jenkins access with proper authentication
-
-### Performance  
-- Use Jenkins agents for parallel builds
-- Cache Docker layers for faster builds
-- Clean up old builds and artifacts
-- Monitor Jenkins resource usage
-
-### Reliability
-- Implement proper error handling
-- Add retry mechanisms for flaky operations
-- Use health checks for deployments
-- Monitor application after deployment
-
-## 📚 Additional Resources
-
-- [Jenkins Official Documentation](https://www.jenkins.io/doc/)
-- [Jenkins Pipeline Syntax](https://www.jenkins.io/doc/book/pipeline/syntax/)
-- [Docker Pipeline Plugin](https://plugins.jenkins.io/docker-workflow/)
-- [GitHub Integration](https://plugins.jenkins.io/github/)
-
----
-
-## 🎉 Conclusion
+##  Conclusion
 
 You now have a complete CI/CD pipeline that:
 1. **Automatically triggers** on code commits
@@ -379,8 +348,3 @@ You now have a complete CI/CD pipeline that:
 3. **Tests** the application thoroughly
 4. **Deploys** the application in a containerized environment
 5. **Monitors** the deployment status
-
-The pipeline follows industry best practices and provides a solid foundation for more advanced DevOps implementations.
-
----
-*Last updated: September 25, 2025*
