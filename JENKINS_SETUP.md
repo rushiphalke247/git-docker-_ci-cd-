@@ -1,4 +1,4 @@
-# 🚀 Jenkins CI/CD Pipeline Setup Guide
+#  Jenkins CI/CD Pipeline Setup Guide
 
 ## Task 2: Simple Jenkins Pipeline for CI/CD
 
@@ -13,7 +13,7 @@ This guide provides complete instructions for setting up a Jenkins CI/CD pipelin
 - [Testing the Pipeline](#testing-the-pipeline)
 - [Troubleshooting](#troubleshooting)
 
-## 🔧 Prerequisites
+##  Prerequisites
 
 ### Required Tools
 - **Java 11 or higher** (for Jenkins)
@@ -26,7 +26,7 @@ This guide provides complete instructions for setting up a Jenkins CI/CD pipelin
 - **DockerHub account** for container registry
 - **GitHub/GitLab access token** for webhooks
 
-## 🏗️ Jenkins Installation
+##  Jenkins Installation
 
 ### Option 1: Local Jenkins Installation
 
@@ -348,3 +348,4 @@ You now have a complete CI/CD pipeline that:
 3. **Tests** the application thoroughly
 4. **Deploys** the application in a containerized environment
 5. **Monitors** the deployment status
+
