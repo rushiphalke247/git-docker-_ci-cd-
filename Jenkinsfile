@@ -28,7 +28,7 @@ pipeline {
                 }
             }
         }
-
+    }
         stage('Setup Environment') {
             steps {
                 echo '🐍 Setting up Python environment...'
@@ -320,8 +320,8 @@ pipeline {
                 └── Check logs above for details
             """
         }
+    }    
         cleanup {
             // Clean up workspace if needed
             cleanWs(cleanWhenFailure: false)
         }
-    }
